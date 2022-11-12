@@ -86,11 +86,13 @@ export default {
       this.$vuetify.theme.dark = true;
       this.linkColor = "white";
       this.linkClass = "py-4 text-center white--text";
+      document.body.classList += "dark_theme";
     } else if (darkmode == "2") {
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         this.$vuetify.theme.dark = true;
         this.linkColor = "white";
         this.linkClass = "py-4 text-center white--text";
+        document.body.classList += "dark_theme";
       }
     }
     

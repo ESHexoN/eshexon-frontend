@@ -20,10 +20,12 @@ import index from './components/index.vue'
 // import preferences from './components/preferences.vue'
 import login from './components/login.vue'
 import reg from './components/reg.vue'
+import dash from './components/dash.vue'
 const routes = [
   { meta: { title: "Home" }, path: '/', component: index },
   { meta: { title: "Login" }, path: '/login/', component: login},
-  { meta: { title: "Register" }, path: '/reg/', component: reg}
+  { meta: { title: "Register" }, path: '/reg/', component: reg},
+  { meta: { title: "Dashboard" }, path: '/dash/', component: dash},
   // { meta: { title: "Preferences" }, path: '/preferences/', component: preferences },
 ]
 const router = new VueRouter({

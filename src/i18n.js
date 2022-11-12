@@ -14,9 +14,13 @@ const i18nTr = {
             password: "密码",
             remember: "保存登录状态",
         },
+        dash: {
+            title: "管理面板"
+        },
         title: {
             index: "首页",
             login: "登录",
+            dash: "管理面板"
         },
         links: [
             {
