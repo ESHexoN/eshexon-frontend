@@ -1,0 +1,11 @@
+.app {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+}
+html {
+    overflow-y: auto!important;
+}
+.nprogress-busy {
+    overflow-y: hidden!important;
+}
