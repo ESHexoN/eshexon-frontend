@@ -2,7 +2,7 @@
     <v-app>
         <v-main>
             <div class="app pr_app">
-                <h1 class="text-h4" v-text="title"></h1>
+                <h1 class="text-h4">登录 ESHexoN</h1>
                 <div class="more">
                 
                     <div class="form">
@@ -60,6 +60,7 @@
 import i18n from '../i18n';
 import md5 from 'js-md5';
 var Lang = i18n("auto", "login");
+Lang.title = "登录 ESHexoN";
 Lang.alertText = Lang.alertType= Lang.l_password = Lang.l_username = null;
 Lang.alertShow = false;
 Lang.clk_load = false;
@@ -114,11 +115,11 @@ export default {
     }
 };
 
-document.onkeydown = (e) => {
-    if (e.keyCode == 13) {
-        document.getElementById("clk_btn").click();
-    }
-}
+// document.onkeydown = (e) => {
+//     if (e.keyCode == 13) {
+//         document.getElementById("clk_btn").click();
+//     }
+// }
 </script>
 
 <style>

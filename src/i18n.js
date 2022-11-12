@@ -17,10 +17,14 @@ const i18nTr = {
         dash: {
             title: "管理面板"
         },
+        write: {
+            title: "书写",
+        },
         title: {
             index: "首页",
             login: "登录",
-            dash: "管理面板"
+            dash: "管理面板",
+            write: "书写"
         },
         links: [
             {

@@ -21,11 +21,13 @@ import index from './components/index.vue'
 import login from './components/login.vue'
 import reg from './components/reg.vue'
 import dash from './components/dash.vue'
+import dash_write from './components/dash/write.vue'
 const routes = [
   { meta: { title: "Home" }, path: '/', component: index },
   { meta: { title: "Login" }, path: '/login/', component: login},
   { meta: { title: "Register" }, path: '/reg/', component: reg},
   { meta: { title: "Dashboard" }, path: '/dash/', component: dash},
+  { meta: { title: "Write" }, path: '/dash/write/', component: dash_write},
   // { meta: { title: "Preferences" }, path: '/preferences/', component: preferences },
 ]
 const router = new VueRouter({

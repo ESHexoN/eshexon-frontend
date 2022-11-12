@@ -113,11 +113,11 @@ export default {
     }
 };
 
-document.onkeydown = (e) => {
-    if (e.keyCode == 13) {
-        document.getElementById("clk_btn").click();
-    }
-}
+// document.onkeydown = (e) => {
+//     if (e.keyCode == 13) {
+//         document.getElementById("clk_btn").click();
+//     }
+// }
 </script>
 
 <style>
