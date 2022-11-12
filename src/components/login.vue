@@ -63,7 +63,7 @@ var Lang = i18n("auto", "login");
 Lang.alertText = Lang.alertType= Lang.l_password = Lang.l_username = null;
 Lang.alertShow = false;
 Lang.clk_load = false;
-Lang.l_burl = localStorage.getItem("backend_url") + "/";
+Lang.l_burl = localStorage.getItem("backend_url") || "";
 document.title = i18n("auto", "login")["title"];
 export default {
     name: "CKY",
