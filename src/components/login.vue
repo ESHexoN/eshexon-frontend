@@ -75,8 +75,6 @@ export default {
     methods: {
         async login() {
             let bkendUrl = new URL(this.l_burl);
-            bkendUrl = `${bkendUrl.protocol}//${bkendUrl.host}${bkendUrl.port ? ":" + bkendUrl.port : ""}`;
-            localStorage.setItem("backend_url", bkendUrl);
             let username = this.l_username;
             let password = this.l_password;
             if (!username || !password || !bkendUrl) {
@@ -85,6 +83,9 @@ export default {
                 this.alertShow = true;
                 return false;
             }
+            bkendUrl = `${bkendUrl.protocol}//${bkendUrl.host}${bkendUrl.port ? ":" + bkendUrl.port : ""}`;
+            localStorage.setItem("backend_url", bkendUrl);
+            
             this.clk_load = true;
             password = md5(password);
             let f_d = await fetch(bkendUrl + "/api/login", {
