@@ -19,7 +19,7 @@
                               color=""
                               class="vbtn"
                               v-bind="attrs"
-                              v-on="on"
+                              v-on="on" depressed
                             >新建/打开</v-btn>
                           </template>
                           <template v-slot:default="dialog">
@@ -46,14 +46,31 @@
                                         value="draft"
                                       ></v-radio>
                                       <v-radio
-                                        key="new"
-                                        label="新建"
-                                        value="new"
+                                        key="page"
+                                        label="页面"
+                                        value="page"
                                       ></v-radio>
                                     </v-radio-group>
-                                    <v-btn @click="get_list" class="mgr vbtn" depressed >
+                                    <v-btn @click="get_list" class="mgr vbtn" depressed :loading="getLoading">
                                           获取
                                     </v-btn>
+                                    <v-btn @click="create_file" class="mgr vbtn" depressed :loading="createLoading" >
+                                          {{ create_file_txt }}
+                                    </v-btn>
+                                    <v-btn @click="open_file" class="mgr vbtn" depressed :loading="openLoading" >
+                                          打开
+                                    </v-btn>
+                                    <v-col
+                                      cols="12"
+                                    >
+                                      <v-text-field
+                                        label="文件名"
+                                        placeholder="请输入文件名"
+                                        outlined
+                                        v-show="!cmpl_show"
+                                        v-model="createFilename"
+                                      ></v-text-field>
+                                    </v-col>
                                     <v-autocomplete
                                       v-show="cmpl_show"
                                       auto-select-first
@@ -62,7 +79,9 @@
                                       :items="full_list"
                                       filled
                                       class="mgt"
+                                      v-model="createFilename"
                                     ></v-autocomplete>
+                                    <p>选择路径: {{ createFilename }}</p>
                                   </v-container>
                                 </div>
                               </v-card-text>
@@ -80,7 +99,7 @@
                       <!-- <v-btn  class="mgr vbtn" depressed >
                             本地保存
                       </v-btn> -->
-                      <v-btn  class="mgr vbtn" depressed >
+                      <v-btn  class="mgr vbtn" depressed @click="save" :loading="saveLoading">
                             保存
                       </v-btn>
                       <v-btn @click="remove_text" class="mgr vbtn" depressed >
@@ -117,6 +136,7 @@ import "codemirror/theme/dracula.css"// 配置里面也需要theme设置为monok
 import "codemirror/mode/markdown/markdown.js" // 配置里面也需要mode设置为vue
 import 'codemirror/addon/selection/active-line' //光标行背景高亮，配置里面也需要styleActiveLine设置为true
 import i18n from '../../i18n';
+import { encode } from 'js-base64';
 document.title = i18n("auto", "title")["write"];
 export default {
     name: "ESHexoN",
@@ -146,11 +166,18 @@ export default {
         alertShow: false,
         radioGroup: "post",
         full_list: ["加载中..."],
-        cmpl_show: false
+        cmpl_show: false,
+        create_file_txt: "手动输入",
+        createLoading: false,
+        getLoading: false,
+        createFilename: "",
+        saveLoading: false,
+        openLoading: false,
     }),
 
     methods: {
         async get_list() {
+          this.getLoading = true;
           if (this.radioGroup == "post") {
             this.cmpl_show = true;
             let posts_list = await fetch(localStorage.getItem("backend_url")+"/api/get_posts_list", {
@@ -169,6 +196,7 @@ export default {
               }
             }
             this.full_list = list;
+            this.getLoading = false;
           } else if (this.radioGroup == "draft") {
             this.cmpl_show = true;
             let posts_list = await fetch(localStorage.getItem("backend_url")+"/api/get_drafts_list", {
@@ -187,16 +215,65 @@ export default {
               }
             }
             this.full_list = list;
-          } 
-          // // 统计草稿数量
-          // let drafts_list = fetch(localStorage.getItem("backend_url")+"/api/get_drafts_list", {
-          //     method: "POST",
-          //     body: JSON.stringify({
-          //         token: localStorage.getItem("login_token") || sessionStorage.getItem("token"),
-          //     }),
-          // }).then(res => res.json()).then(drafts_list => {
-          //     return JSON.parse(drafts_list.statusInfo);
-          // });
+            this.getLoading = false;
+          } else {
+            this.alertType = "info";
+            this.alertShow = true;
+            this.alertText = "该模式下需要手动输入文件名";
+            setTimeout(() => {this.alertShow = false}, 1500);
+            this.getLoading = false;
+          }
+        },
+        async create_file() {
+          this.cmpl_show = false;
+        },
+        async open_file() {
+          this.openLoading = true;
+          let filename = this.createFilename;
+          let file_content = await fetch(localStorage.getItem("backend_url")+"/api/get_file_content", {
+              method: "POST",
+              body: JSON.stringify({
+                  token: localStorage.getItem("login_token") || sessionStorage.getItem("token"),
+                  filename,
+              }),
+          }).then(res => res.json());
+          this.code = file_content.statusInfo;
+          this.openLoading = false;
+        },
+        async save() {
+          this.saveLoading = true;
+          let content = encode(this.code);
+          let filename = this.createFilename;
+          let b64 = true;
+          let uri;
+          if (this.radioGroup == "post") {
+            uri = localStorage.getItem("backend_url")+"/api/add_posts";
+          } else if (this.radioGroup == "draft") {
+            uri = localStorage.getItem("backend_url")+"/api/add_drafts"
+          }
+          let save_file = await fetch(uri, {
+                method: "POST",
+                body: JSON.stringify({
+                    token: localStorage.getItem("login_token") || sessionStorage.getItem("token"),
+                    content,
+                    filename,
+                    b64,
+                }),
+            }).then(res => res.json());
+          if (save_file.statusCode == 200) {
+            this.alertType = "success";
+            this.alertShow = true;
+            this.alertText = "保存成功";
+            setTimeout(() => {this.alertShow = false}, 1500);
+            this.saveLoading = false;
+          } else {
+            this.alertType = "error";
+            this.alertShow = true;
+            this.alertText = "保存失败";
+            setTimeout(() => {this.alertShow = false}, 1500);
+            this.saveLoading = false;
+          }
+
         },
         dash() {
             if (!localStorage.getItem("login_token") && !sessionStorage.getItem("login_token")) {
@@ -269,7 +346,11 @@ export default {
           this.auto_save_text = "关闭自动保存";
         }
         setInterval(() => {
-            this.preview = marked(this.code);
+            let rawContent = this.code;
+            if (rawContent.split("---\n").length > 2) {
+              rawContent = rawContent.split("---\n")[2];
+            }
+            this.preview = marked(rawContent);
             if (localStorage.getItem("auto_save") == "true") {
               localStorage.setItem("_tmp_auto_save", this.code);
             }
@@ -298,7 +379,7 @@ export default {
         margin-top: 6vh;
         transition: all .3s;
     }
-    .btnGroupWrite .mgr {
+    .mgr {
       margin-right: 15px;
     }
     .code, .CodeMirror {
@@ -323,7 +404,7 @@ export default {
       background-color: rgba(255, 255, 255, 0.1)!important;
     }
     ._preview pre code {
-      background-color: none;
+      background-color: unset!important;
     }
     .preview_btn {
       display: none;
@@ -347,6 +428,11 @@ export default {
       }
       .preview_btn {
         display: inline-block;
+      }
+    }
+    @media screen and (max-width: 576px) {
+      .btnGroupWrite {
+        left: 0!important;
       }
     }
     @media screen and (min-width: 850px) {

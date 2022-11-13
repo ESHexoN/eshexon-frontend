@@ -30,6 +30,10 @@ const i18nTr = {
             {
                 name: "首页",
                 path: "/"
+            },
+            {
+                name: "管理面板",
+                path: "/dash/"
             }
         ]
     }

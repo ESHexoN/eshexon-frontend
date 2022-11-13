@@ -4,9 +4,9 @@
             <div class="app dash">
                 <h1 class="text-h3" v-text="title"></h1>
                 <div class="more text-h6 font-weight-light cardgroup">
-                    <div class="card mgr org">
+                    <div class="card mgr org" @click="go2('write')">
                         <!-- 写作 -->
-                        <div class="txtgroup">
+                        <div class="txtgroup" >
                             <p><span>书写</span></p>
                             <p><span class="op8h">共 {{posts_num}} 篇文章</span></p>
                         </div>
@@ -57,6 +57,9 @@ export default {
             } else {
                 this.$router.push("/dash/");
             }
+        },
+        go2(id) {
+            this.$router.push("/dash/"+id+"/");
         }
     },
 
