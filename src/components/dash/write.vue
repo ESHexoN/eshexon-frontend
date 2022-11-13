@@ -8,8 +8,101 @@
                         <codemirror class="code" v-model="code" :options="cmOptions"></codemirror>
                         <div class="_preview markdown-body" v-html="preview"></div>
                     </div>
+                    <div class="btnGroupWrite">
+                      <v-col cols="auto" class="dp-inline">
+                        <v-dialog
+                          transition="dialog-bottom-transition"
+                          max-width="600"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color=""
+                              class="vbtn"
+                              v-bind="attrs"
+                              v-on="on"
+                            >新建/打开</v-btn>
+                          </template>
+                          <template v-slot:default="dialog">
+                            <v-card>
+                              <v-toolbar
+                                color="primary"
+                                dark
+                              >新建 / 打开文件</v-toolbar>
+                              <v-card-text>
+                                <div class="select-file">
+                                  <v-container
+                                    class="px-0"
+                                    fluid
+                                  >
+                                    <v-radio-group v-model="radioGroup">
+                                      <v-radio
+                                        key="post"
+                                        label="文章"
+                                        value="post"
+                                      ></v-radio>
+                                      <v-radio
+                                        key="draft"
+                                        label="草稿"
+                                        value="draft"
+                                      ></v-radio>
+                                      <v-radio
+                                        key="new"
+                                        label="新建"
+                                        value="new"
+                                      ></v-radio>
+                                    </v-radio-group>
+                                    <v-btn @click="get_list" class="mgr vbtn" depressed >
+                                          获取
+                                    </v-btn>
+                                    <v-autocomplete
+                                      v-show="cmpl_show"
+                                      auto-select-first
+                                      small-chips
+                                      label="输入文件路径"
+                                      :items="full_list"
+                                      filled
+                                      class="mgt"
+                                    ></v-autocomplete>
+                                  </v-container>
+                                </div>
+                              </v-card-text>
+                              <v-card-actions class="justify-end">
+                                <v-btn
+                                  text
+                                  @click="dialog.value = false"
+                                >关闭</v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </template>
+                        </v-dialog>
+                      </v-col>
+                      
+                      <!-- <v-btn  class="mgr vbtn" depressed >
+                            本地保存
+                      </v-btn> -->
+                      <v-btn  class="mgr vbtn" depressed >
+                            保存
+                      </v-btn>
+                      <v-btn @click="remove_text" class="mgr vbtn" depressed >
+                            清除
+                      </v-btn>
+                      <v-btn @click="auto_save" class="mgr vbtn" depressed >
+                            {{ auto_save_text }}
+                      </v-btn>
+                      <v-btn @click="show_preview" class="preview_btn vbtn" depressed >
+                            {{ pre_text }}
+                      </v-btn>
+                    </div>
                 </div>
             </div>
+            <v-alert
+                class="alert"
+                border="left"
+                elevation="3"
+                :type="alertType"
+                v-text="alertText"
+                v-show="alertShow"
+            ></v-alert>
         </v-main>
     </v-app>
 </template>
@@ -34,7 +127,7 @@ export default {
 
     data: () => ({
         title: i18n("auto", "write")["title"],
-        code: "",
+        code: "> 使用 ESHexoN 开始书写。",
         cmOptions: {
             tabSize: 4,// tab的空格个数
             theme: 'dracula',//主题样式
@@ -45,10 +138,66 @@ export default {
             mode: "markdown", //实现javascript代码高亮
             readOnly: false//只读
         },
-        preview: ""
+        preview: "",
+        pre_text: "预览",
+        auto_save_text: "开启自动保存",
+        alertText: null,
+        alertType: null,
+        alertShow: false,
+        radioGroup: "post",
+        full_list: ["加载中..."],
+        cmpl_show: false
     }),
 
     methods: {
+        async get_list() {
+          if (this.radioGroup == "post") {
+            this.cmpl_show = true;
+            let posts_list = await fetch(localStorage.getItem("backend_url")+"/api/get_posts_list", {
+                method: "POST",
+                body: JSON.stringify({
+                    token: localStorage.getItem("login_token") || sessionStorage.getItem("token"),
+                }),
+            }).then(res => res.json()).then(posts_list => {
+                return JSON.parse(posts_list.statusInfo);
+            });
+            console.log(posts_list);
+            let list = [];
+            for (let i in posts_list) {
+              for (let o in posts_list[i]) {
+                list.push(posts_list[i][o]["filepath"]);
+              }
+            }
+            this.full_list = list;
+          } else if (this.radioGroup == "draft") {
+            this.cmpl_show = true;
+            let posts_list = await fetch(localStorage.getItem("backend_url")+"/api/get_drafts_list", {
+                method: "POST",
+                body: JSON.stringify({
+                    token: localStorage.getItem("login_token") || sessionStorage.getItem("token"),
+                }),
+            }).then(res => res.json()).then(posts_list => {
+                return JSON.parse(posts_list.statusInfo);
+            });
+            console.log(posts_list);
+            let list = [];
+            for (let i in posts_list) {
+              for (let o in posts_list[i]) {
+                list.push(posts_list[i][o]["filepath"]);
+              }
+            }
+            this.full_list = list;
+          } 
+          // // 统计草稿数量
+          // let drafts_list = fetch(localStorage.getItem("backend_url")+"/api/get_drafts_list", {
+          //     method: "POST",
+          //     body: JSON.stringify({
+          //         token: localStorage.getItem("login_token") || sessionStorage.getItem("token"),
+          //     }),
+          // }).then(res => res.json()).then(drafts_list => {
+          //     return JSON.parse(drafts_list.statusInfo);
+          // });
+        },
         dash() {
             if (!localStorage.getItem("login_token") && !sessionStorage.getItem("login_token")) {
                 this.$router.push("/login/");
@@ -56,7 +205,43 @@ export default {
                 this.$router.push("/dash/");
             }
         },
-        
+        show_preview() {
+          if (this.pre_text == "预览") {
+            this.pre_text = "取消预览";
+            document.querySelector("._preview").style.width = "100%";
+            document.querySelector("._preview").style.display = "block";
+            document.querySelector(".code").style.display = "none";
+          } else {
+            this.pre_text = "预览";
+            document.querySelector("._preview").style.width = "50%";
+            document.querySelector("._preview").style.display = "none";
+            document.querySelector(".code").style.display = "block";
+          }
+        },
+        remove_text() {
+          localStorage.setItem("_tmp_auto_save", "");
+          this.alertShow = true;
+          this.alertText = "清除成功";
+          this.alertType = "success";
+          setTimeout(() => {this.alertShow = false}, 1500);
+        },
+        auto_save() {
+          if (this.auto_save_text == "开启自动保存") {
+            this.auto_save_text = "关闭自动保存";
+            localStorage.setItem("auto_save", true);
+            this.alertShow = true;
+            this.alertText = "开启成功";
+            this.alertType = "success";
+            setTimeout(() => {this.alertShow = false}, 1500);
+          } else {
+            this.auto_save_text = "开启自动保存";
+            localStorage.setItem("auto_save", false);
+            this.alertShow = true;
+            this.alertText = "关闭成功";
+            this.alertType = "success";
+            setTimeout(() => {this.alertShow = false}, 1500);
+          }
+        }
     },
 
     created: async function() {
@@ -79,9 +264,15 @@ export default {
             this.$router.push("/");
         }
     
-
+        if (localStorage.getItem("auto_save") == "true") {
+          this.code = localStorage.getItem("_tmp_auto_save");
+          this.auto_save_text = "关闭自动保存";
+        }
         setInterval(() => {
             this.preview = marked(this.code);
+            if (localStorage.getItem("auto_save") == "true") {
+              localStorage.setItem("_tmp_auto_save", this.code);
+            }
         }, 500);
     }
     
@@ -90,10 +281,25 @@ export default {
 </script>
 
 <style>
+    .mgt {
+      margin-top: 10px!important;
+    }
+    .dp-inline {
+      display: inline;
+    }
+    .alert {
+        position: fixed !important;
+        top: 1rem;
+        right: 1rem;
+        /* min-width: 6rem; */
+      }
     .app.write  {
         text-align: center;
         margin-top: 6vh;
         transition: all .3s;
+    }
+    .btnGroupWrite .mgr {
+      margin-right: 15px;
     }
     .code, .CodeMirror {
         text-align: left;
@@ -109,6 +315,50 @@ export default {
         text-align: left;
         color: white !important;
         overflow-y: scroll;
+    }
+    ._preview blockquote {
+      color: aliceblue!important;
+    }
+    ._preview pre {
+      background-color: rgba(255, 255, 255, 0.1)!important;
+    }
+    ._preview pre code {
+      background-color: none;
+    }
+    .preview_btn {
+      display: none;
+    }
+    .btnGroupWrite {
+      position: fixed;
+      top: 70vh;
+      left: 6vw;
+      /* max-width: 60px; */
+      /* left: calc(50vw - 60px); */
+    }
+    .btnGroupWrite .vbtn {
+      margin-top: 5px;
+    }
+    @media screen and (max-width: 850px) {
+      .code {
+        width: 100%!important;
+      }
+      ._preview {
+        display: none;
+      }
+      .preview_btn {
+        display: inline-block;
+      }
+    }
+    @media screen and (min-width: 850px) {
+      .code, ._preview {
+        width: 50%!important;
+      }
+      ._preview, .code {
+        display: block!important;
+      }
+      .preview_btn {
+        display: none;
+      }
     }
     ::-webkit-scrollbar {
         width: 1px;
