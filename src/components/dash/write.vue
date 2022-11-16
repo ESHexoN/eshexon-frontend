@@ -238,6 +238,9 @@ export default {
               }),
           }).then(res => res.json());
           this.code = file_content.statusInfo;
+          if (file_content.statusInfo == "404: Not Found") {
+              this.code = "[打开文件失败, 文件不存在]";
+          } 
           this.openLoading = false;
         },
         async save() {
