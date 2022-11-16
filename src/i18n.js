@@ -5,7 +5,8 @@ const i18nTr = {
             title: "欢迎使用 ESHexoN!",
             more: "ESHexoN 是一款简洁、强大的 Hexo 在线编辑器。",
             login: "立即登录",
-            todash: "管理面板"
+            todash: "管理面板",
+            index_btn: "开始使用"
         },
         login: {
             title: "登录 ESHexoN",

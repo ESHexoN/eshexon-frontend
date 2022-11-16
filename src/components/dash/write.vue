@@ -57,7 +57,7 @@
                                     <v-btn @click="create_file" class="mgr vbtn" depressed :loading="createLoading" >
                                           {{ create_file_txt }}
                                     </v-btn>
-                                    <v-btn @click="open_file" class="mgr vbtn" depressed :loading="openLoading" >
+                                    <v-btn @click="open_file" class="mgr vbtn" depressed :loading="openLoading" v-show="createFilename">
                                           打开
                                     </v-btn>
                                     <v-col
@@ -376,7 +376,7 @@ export default {
       }
     .app.write  {
         text-align: center;
-        margin-top: 6vh;
+        margin-top: 3vh;
         transition: all .3s;
     }
     .mgr {
@@ -411,7 +411,7 @@ export default {
     }
     .btnGroupWrite {
       position: fixed;
-      top: 70vh;
+      top: 75vh;
       left: 6vw;
       /* max-width: 60px; */
       /* left: calc(50vw - 60px); */

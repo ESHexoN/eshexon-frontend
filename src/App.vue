@@ -34,12 +34,12 @@
                 rounded
                 class="my-2 footer-link">{{ link.name }}</v-btn>
             </router-link>
-            <v-col
+            <!-- <v-col
                 :class="linkClass"
                 cols="12"
             >
                 &copy; 2021-{{ new Date().getFullYear() }} — <strong>ESHexoN</strong>
-            </v-col>
+            </v-col> -->
             </v-row>
         </v-footer>
     </v-main>

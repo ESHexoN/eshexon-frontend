@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <v-main>
-            <div class="app pr_app">
+            <div class="app pr_app login">
                 <h1 class="text-h4">登录 ESHexoN</h1>
                 <div class="more">
                 
@@ -123,9 +123,9 @@ export default {
 </script>
 
 <style>
-    .pr_app {
+    .pr_app.login {
         text-align: center;
-        margin-top: 18vh!important;
+        margin-top: 11vh!important;
         transition: all .3s;
     }
     .more {

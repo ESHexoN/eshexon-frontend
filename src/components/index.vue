@@ -14,11 +14,6 @@
 <script>
 import i18n from '../i18n';
 var Lang = i18n("auto", "index");
-if (!localStorage.getItem("login_token") && !sessionStorage.getItem("login_token")) {
-    Lang.index_btn = Lang.login;
-} else {
-    Lang.index_btn = Lang.todash;
-}
 document.title = i18n("auto", "title")["index"];
 export default {
     name: "ESHexoN",

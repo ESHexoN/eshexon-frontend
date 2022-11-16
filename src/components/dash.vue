@@ -11,10 +11,10 @@
                             <p><span class="op8h">共 {{posts_num}} 篇文章</span></p>
                         </div>
                     </div>
-                    <div class="card mgr gre">
+                    <div class="card mgr gre" @click="go2('cfg')">
                         <!-- 页面 -->
                         <div class="txtgroup">
-                            <p><span>页面</span></p>
+                            <p><span>管理</span></p>
                             <p><span class="op8h">共 {{drafts_num}} 篇草稿</span></p>
                         </div>
                     </div>
@@ -118,7 +118,7 @@ export default {
 <style>
     .app.dash  {
         text-align: center;
-        margin-top: 15vh;
+        margin-top: 11vh;
         transition: all .3s;
     }
     .more {

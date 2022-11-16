@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <v-main>
-            <div class="app pr_app">
+            <div class="app pr_app login">
                 <h1 class="text-h4" v-text="title"></h1>
                 <div class="more">
                 

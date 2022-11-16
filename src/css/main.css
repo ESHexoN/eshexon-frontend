@@ -9,3 +9,6 @@ html {
 .nprogress-busy {
     overflow-y: hidden!important;
 }
+.alert {
+    z-index: 9999;
+}
