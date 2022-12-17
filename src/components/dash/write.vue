@@ -249,7 +249,7 @@ export default {
           let filename = this.createFilename;
           let b64 = true;
           let uri;
-          if (this.radioGroup == "post") {
+          if (this.radioGroup == "post" || this.radioGroup == "page") {
             uri = localStorage.getItem("backend_url")+"/api/add_posts";
           } else if (this.radioGroup == "draft") {
             uri = localStorage.getItem("backend_url")+"/api/add_drafts"
