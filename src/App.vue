@@ -124,4 +124,20 @@ export default {
   color: black!important;
   text-decoration: none;
 }
+::-webkit-scrollbar {
+        width: 1px;
+        height: 3px;
+    }
+    /*滚动条里面小方块*/
+    ::-webkit-scrollbar-thumb {
+        border-radius: 2px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+    }
+    /*滚动条里面轨道*/
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
 </style>
