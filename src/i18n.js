@@ -65,6 +65,7 @@ const i18n = (lang, text) => {
             // },
         ]
     } else {
+        if (!lang) lang = 'zh-CN';
         return i18nTr[lang][text];
     }
 }
